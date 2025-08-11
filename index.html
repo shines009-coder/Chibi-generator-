@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chibi Generator Ultra — NoReact v2 (Offline, Full)</title>
+  <style>
+    :root {
+      --bg: #0b1020;
+      --panel: #0f172a;
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --border: rgba(255,255,255,.08);
+      --accent: #8b5cf6;
+      --accent-2: #22d3ee;
+      --chip: rgba(255,255,255,.08);
+      --chip-brd: rgba(255,255,255,.15);
+    }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; background:var(--bg); color:var(--text); }
+    .hero { padding:28px 16px; background: radial-gradient(1000px 500px at 10% -20%, rgba(139,92,246,.3), transparent 60%), radial-gradient(800px 400px at 90% 0%, rgba(34,211,238,.25), transparent 55%), linear-gradient(180deg, #0b1020, #0a0f1c 40%, #0b1020); border-bottom:1px solid var(--border); }
+    .container { max-width: 1280px; margin: 0 auto; padding: 20px 16px; }
+    h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: .3px; }
+    .sub { color: var(--muted); font-size: 13px; }
+    .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+    .btn { border:1px solid var(--border); border-radius:12px; padding:10px 14px; background:linear-gradient(180deg,#141b37,#0f1630); color:#fff; font-weight:600; cursor:pointer; box-shadow: 0 6px 18px rgba(0,0,0,.25); }
+    .btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; }
+    label.block { display:block; font-size:12px; font-weight:600; color:var(--muted); margin-bottom:6px; }
+    select, input[type="number"], input[type="text"] { font-size:14px; border:1px solid var(--border); border-radius:12px; padding:10px 12px; background: #0c132a; color: var(--text); width:100%; }
+    textarea { width:100%; min-height:120px; background:#0c132a; border:1px solid var(--border); border-radius:12px; padding:10px 12px; color:var(--text); }
+    .grid-3 { display:grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap:14px; }
+    .grid-2 { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap:14px; }
+    .grid-4 { display:grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap:14px; }
+    @media (max-width: 1100px){ .grid-4{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media (max-width: 980px){ .grid-3{ grid-template-columns:1fr; } .grid-2{ grid-template-columns:1fr; } }
+    .panel { background: var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px; }
+    .title { font-size:14px; font-weight:700; margin-bottom:8px; color:#cbd5e1; }
+    .chip { display:inline-flex; align-items:center; gap:6px; border-radius:999px; padding:6px 10px; background:var(--chip); border:1px solid var(--chip-brd); color:#e5e7eb; font-size:12px; }
+    .separator { height:1px; background:var(--border); margin:14px 0; }
+  </style>
+</head>
+<body>
+  <div class="hero">
+    <div class="container">
+      <h1>Chibi Generator Ultra — <span style="color:#a5b4fc">NoReact v2</span></h1>
+      <div class="sub">Expanded prompts + full exports (Single SVG, 16 TXT/SVG, 4×4 SVG, 4×4 PNG) — works offline everywhere.</div>
+      <div style="margin-top:10px"><a href="#appTop" class="btn primary">Use the Generator ↓</a></div>
+    </div>
+  </div>
+
+  <div class="container" id="appTop">
+    <div class="panel">
+      <div class="title">Core</div>
+      <div class="grid-4">
+        <div><label class="block">Style</label><select id="style"></select></div>
+        <div><label class="block">Finish / Realism</label><select id="finish"></select></div>
+        <div><label class="block">3D Mode</label><select id="mode3d"><option>No</option><option>Yes</option></select></div>
+        <div><label class="block">Seed</label><input id="seed" type="number" value="3795"/></div>
+      </div>
+
+      <div class="title" style="margin-top:14px">Identity</div>
+      <div class="grid-4">
+        <div><label class="block">Age</label><select id="age"></select></div>
+        <div><label class="block">Gender</label><select id="gender"></select></div>
+        <div><label class="block">Skin tone</label><select id="skin"></select></div>
+        <div><label class="block">Eye color</label><select id="eye"></select></div>
+      </div>
+
+      <div class="title" style="margin-top:14px">Hair</div>
+      <div class="grid-4">
+        <div><label class="block">Hair color</label><select id="hairColor"></select></div>
+        <div><label class="block">Hair style</label><select id="hairStyle"></select></div>
+        <div><label class="block">Primary color (palette)</label><input id="pPrimary" type="text" placeholder="e.g., sunset yellow"/></div>
+        <div><label class="block">Accent color (palette)</label><input id="pAccent" type="text" placeholder="e.g., gold"/></div>
+      </div>
+
+      <div class="title" style="margin-top:14px">Outfit & Shoes</div>
+      <div class="grid-4">
+        <div><label class="block">Outfit</label><select id="outfit"></select></div>
+        <div><label class="block">Shoes</label><select id="shoes"></select></div>
+        <div><label class="block">Pose</label><select id="pose"></select></div>
+        <div><label class="block">Lighting</label><select id="lighting"></select></div>
+      </div>
+
+      <div class="title" style="margin-top:14px">Scene</div>
+      <div class="grid-4">
+        <div><label class="block">Vibe</label><select id="vibe"></select></div>
+        <div><label class="block">Background</label><select id="background"></select></div>
+        <div><label class="block">Traits (comma separated)</label><input id="traits" type="text" placeholder="e.g., freckles, gold chain"/></div>
+        <div><label class="block">Use same seed for 16-grid</label><select id="lockGrid"><option>Yes</option><option>No</option></select></div>
+      </div>
+
+      <div class="separator"></div>
+      <div class="title">Couple Mode</div>
+      <div class="row" style="margin-bottom:8px"><label class="chip"><input id="coupleToggle" type="checkbox" style="margin-right:8px"> Enable couple</label></div>
+      <div id="couplePanel" style="display:none">
+        <div class="grid-4">
+          <div><label class="block">Partner gender</label><select id="pGender"></select></div>
+          <div><label class="block">Partner age</label><select id="pAge"></select></div>
+          <div><label class="block">Partner hair style</label><select id="pHairStyle"></select></div>
+          <div><label class="block">Partner outfit</label><select id="pOutfit"></select></div>
+        </div>
+      </div>
+
+      <div class="separator"></div>
+      <div class="row">
+        <button class="btn" id="btnCopyJSON">Copy JSON</button>
+        <button class="btn" id="btnCopyTags">Copy Tags</button>
+        <button class="btn" id="btnCopyPrompt">Copy Single Prompt</button>
+        <button class="btn" id="btnSingleSVG">⬇️ Single Prompt SVG</button>
+        <button class="btn" id="btn16TXT">⬇️ 16 Prompts TXT</button>
+        <button class="btn primary" id="btn16SVG">⬇️ 16 Prompt SVG (list)</button>
+        <button class="btn primary" id="btn4x4SVG">⬇️ 4×4 SVG sheet</button>
+        <button class="btn primary" id="btn4x4PNG">⬇️ 4×4 Sprite PNG</button>
+      </div>
+
+      <div class="separator"></div>
+      <div class="title">Live — Single prompt</div>
+      <textarea id="singlePrompt" readonly></textarea>
+
+      <div class="title" style="margin-top:14px">Live — 16 prompts</div>
+      <textarea id="sixteenPrompts" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    const BLANK = "— blank —";
+    const EXPRESSIONS_16 = [
+      "laughing loudly","angry","sulking","surprised","winking","thinking","kissing","seductive",
+      "confident","eye-roll","happy-cry","sleepy","mischievous smirk","shock + blush","pout","joyful sparkle eyes"
+    ];
+
+    const OPT = {
+      style: [BLANK,"bratz-inspired chibi","kawaii pastel chibi","anime SD (super-deformed)","flat vector sticker","3D toy-style","hyper-realistic chibi"],
+      finish: [BLANK,"flat cute chibi","clean lineart + flat colors","cel-shaded chibi","gradient-shaded chibi","vector SVG look","comic-inked with halftone","semi-realistic paint","hyper-realistic illustration","3D glossy toy","3D semi-realistic (CGI)"],
+      age: [BLANK,"baby (0-2)","kid (3-12)","teen (13-17)","young adult (18-29)","adult (30+)"],
+      gender: [BLANK,"female","male","androgynous"],
+      skin: [BLANK,"porcelain","fair","light olive","medium brown","golden brown","deep brown","rich ebony"],
+      eye: [BLANK,"brown","hazel","green","blue","violet","gray","amber"],
+      hairColor: [BLANK,"black","dark brown","brown","auburn","blonde","platinum","red copper","blue","pink","purple"],
+      hairStyleFemale: [BLANK,"two space buns","high ponytail","curly bob","long wavy","braided pigtails","sleek bun","side part bob","knotless braids","box braids","butterfly locs","afro puff","double puffs","twist-out","locs bun"],
+      hairStyleMale: [BLANK,"low fade","mid fade","high fade","taper fade","line-up + waves","360 waves","high-top fade","short curls","two-strand twists","coils","afro","cornrows (straight-back)","cornrows (zig-zag)","starter locs","freeform locs"],
+      outfit: [BLANK,"graphic tee + cargo pants","oversized hoodie + joggers","varsity jacket + jeans","tracksuit set","puffer jacket + sweatpants","denim jacket + tee + chinos","bodycon mini dress","crop top + pleated skirt","cozy sweater + leggings","sundress + denim jacket","blazer + trousers + loafers","tux vibe with bow tie","evening gown","kid: tee + shorts + backpack","kid: hoodie + joggers + cap","baby: onesie with ears","baby: romper + bib"],
+      shoes: [BLANK,"low-top sneakers","high-top sneakers","retro basketball shoes","running shoes","slides","sandals","crocs","combat boots","timberland-style boots","chelsea boots","dress shoes","heels","platform heels","ankle boots","baby booties"],
+      pose: [BLANK,"standing hands on hips","peace sign","blowing a kiss","one leg popped","leaning on table","seated on stool","back-to-back pose (for couples)","holding phone selfie","jumping mid-air","arms crossed smirk"],
+      lighting: [BLANK,"soft studio","ring light glow","neon club lights","sunset golden hour","cool daylight","dramatic contrast"],
+      vibe: [BLANK,"cute and motivational","funny and sassy","boss-babe energy","romantic","chill aesthetic","streetwear cool"],
+      background: [BLANK,"transparent PNG, sticker-safe","soft gradient halo","plain white sticker background","urban street at night (bokeh)","bedroom desk","school hallway","cozy cafe","basketball court","photo backdrop paper"]
+    };
+
+    const state = {
+      style: "bratz-inspired chibi",
+      finish: "clean lineart + flat colors",
+      mode3d: "No",
+      age: "young adult (18-29)",
+      gender: "female",
+      skin: "medium brown",
+      eye: "hazel",
+      hairColor: "black",
+      hairStyle: "two space buns",
+      outfit: "oversized hoodie + joggers",
+      shoes: "low-top sneakers",
+      pose: "standing hands on hips",
+      lighting: "soft studio",
+      vibe: "streetwear cool",
+      background: "soft gradient halo",
+      pPrimary: "",
+      pAccent: "gold",
+      traits: "",
+      seed: 3795,
+      lockGrid: "Yes",
+      couple: false,
+      partner: { gender: "male", age: "young adult (18-29)", hairStyle: "low fade", outfit: "graphic tee + cargo pants" }
+    };
+
+    function fillSelect(id, arr, value){
+      const el = document.getElementById(id);
+      el.innerHTML = arr.map(o=>`<option>${o}</option>`).join("");
+      el.value = value ?? arr[0];
+      el.addEventListener("change", ()=>{ onChange(id, el.value); });
+    }
+
+    function onChange(id, val){
+      if(id==="gender" && (val==="male"||val==="female"||val==="androgynous")){
+        const list = (val==="male") ? OPT.hairStyleMale : (val==="female" ? OPT.hairStyleFemale : [...new Set([...OPT.hairStyleMale, ...OPT.hairStyleFemale])]);
+        populateHairStyles(list);
+      }
+      state[id] = val;
+      render();
+    }
+
+    function populateHairStyles(list){
+      const el = document.getElementById("hairStyle");
+      const current = state.hairStyle;
+      el.innerHTML = list.map(o=>`<option>${o}</option>`).join("");
+      el.value = list.includes(current) ? current : list[0];
+      el.onchange = ()=> onChange("hairStyle", el.value);
+      state.hairStyle = el.value;
+    }
+
+    function notBlank(v){ return v && v!==BLANK; }
+
+    function buildSinglePrompt(s){
+      const parts = [];
+
+      if (s.couple){
+        parts.push(`${s.style!==BLANK?s.style:"chibi"} characters (couple)`);
+        const p1 = [s.age, s.gender].filter(notBlank).join(", ");
+        if (p1) parts.push(`primary: ${p1}`);
+        const p2 = [s.partner.age, s.partner.gender].filter(notBlank).join(", ");
+        if (p2) parts.push(`partner: ${p2}`);
+      } else {
+        parts.push(`${s.style!==BLANK?s.style:"chibi"} character`);
+        const who = [s.age, s.gender].filter(notBlank).join(", ");
+        if (who) parts.push(`(${who})`);
+      }
+
+      if (notBlank(s.vibe)) parts.push(`${s.vibe}.`);
+
+      const look = [];
+      if (notBlank(s.skin)) look.push(`Skin tone: ${s.skin}`);
+      if (notBlank(s.eye)) look.push(`eyes: ${s.eye}`);
+      if (notBlank(s.hairColor)||notBlank(s.hairStyle)) look.push(`hair: ${[s.hairColor,s.hairStyle].filter(notBlank).join(", ")}`);
+      if (look.length) parts.push(look.join("; ") + ".");
+
+      if (s.couple){
+        if (notBlank(s.outfit)) parts.push(`Outfit (primary): ${s.outfit}.`);
+        if (notBlank(s.partner.outfit)) parts.push(`Outfit (partner): ${s.partner.outfit}.`);
+      } else {
+        if (notBlank(s.outfit)) parts.push(`Outfit: ${s.outfit}.`);
+      }
+
+      if (notBlank(s.shoes)) parts.push(`Shoes: ${s.shoes}.`);
+      const pal = [s.pPrimary, s.pAccent].filter(notBlank);
+      if (pal.length) parts.push(`Palette: ${pal.join(" + ")}.`);
+
+      const pose = [s.pose, s.lighting].filter(notBlank);
+      if (pose.length) parts.push(`Pose/Light: ${pose.join("; ")}.`);
+      if (notBlank(s.background)) parts.push(`Setting: ${s.background}.`);
+      if (notBlank(s.traits)) parts.push(`Traits: ${s.traits}.`);
+
+      let finish = s.finish;
+      if (s.mode3d==="Yes") finish = finish && finish.includes("3D") ? finish : ["3D look", finish].filter(notBlank).join(", ");
+      if (notBlank(finish)) parts.push(`Finish: ${finish}.`);
+      if (s.seed) parts.push(`Seed ${s.seed}.`);
+
+      return parts.join(" ");
+    }
+
+    function build16Prompts(s){
+      const base = JSON.parse(JSON.stringify(s));
+      if (s.lockGrid==="Yes") base.seed = s.seed;
+      return EXPRESSIONS_16.map(e=> buildSinglePrompt({...base}) + ` expression: ${e}.`);
+    }
+
+    function toTags(s){
+      const raw = ["chibi", s.mode3d==="Yes"?"3d":"", s.style,s.age,s.gender,s.skin,s.eye,s.hairColor,s.hairStyle,s.outfit,s.shoes,s.vibe,s.pose,s.lighting,s.background]
+        .filter(v=>v && v!==BLANK);
+      const clean = [...new Set(raw.map(t=>String(t).toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"")).filter(Boolean))];
+      return clean.slice(0,25);
+    }
+
+    // Helpers
+    function wrapText(text, width){
+      const words = String(text||"").split(/\s+/);
+      const out = []; let line = "";
+      words.forEach(w=>{
+        const test = (line?line+" ":"")+w;
+        if(test.length > width){ out.push(line); line = w; } else { line = test; }
+      });
+      if(line) out.push(line);
+      return out;
+    }
+    function escapeXML(s){ return String(s).replace(/[&<>"]/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[c])); }
+
+    function downloadBlob(filename, blob){
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a"); a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+    function downloadText(filename, text, type="text/plain"){ downloadBlob(filename, new Blob([text], {type})); }
+
+    async function svgToPngBlob(svgText, px=2048){
+      return new Promise((resolve,reject)=>{
+        const img = new Image();
+        const svg = new Blob([svgText], {type:"image/svg+xml"});
+        const url = URL.createObjectURL(svg);
+        img.onload = ()=>{
+          const canvas = document.createElement("canvas");
+          canvas.width = px; canvas.height = (img.height/img.width)*px;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.toBlob((blob)=>{ URL.revokeObjectURL(url); if(!blob) reject(new Error("PNG export failed")); else resolve(blob); });
+        };
+        img.onerror = reject;
+        img.src = url;
+      });
+    }
+
+    function singlePromptSVG(title, body, width=1024){
+      const padding = 32, lh = 22;
+      const lines = wrapText(body, 60);
+      const height = padding*2 + 28 + lines.length*lh;
+      const textY = padding + 28;
+      return `<?xml version="1.0" encoding="UTF-8"?>
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <rect x="0" y="0" width="${width}" height="${height}" rx="24" fill="#ffffff" stroke="#e5e7eb"/>
+        <text x="${padding}" y="${padding+4}" font-family="Inter, system-ui" font-size="18" font-weight="700" fill="#111827">${escapeXML(title)}</text>
+        ${lines.map((ln,i)=>`<text x="${padding}" y="${textY+i*lh}" font-family="Inter, system-ui" font-size="14" fill="#374151">${escapeXML(ln)}</text>`).join("")}
+      </svg>`;
+    }
+
+    function listSVG(title, items, width=1024){
+      const padding = 32, lh = 22;
+      const rows = [];
+      let y = padding + 28;
+      rows.push(`<text x="${padding}" y="${padding+4}" font-family="Inter, system-ui" font-size="18" font-weight="700" fill="#111827">${escapeXML(title)}</text>`);
+      items.forEach((it,i)=>{
+        rows.push(`<text x="${padding}" y="${y}" font-family="Inter, system-ui" font-size="14" fill="#111827">#${i+1}</text>`);
+        y += lh;
+        const lines = wrapText(it, 60);
+        lines.forEach(line=>{
+          rows.push(`<text x="${padding+28}" y="${y}" font-family="Inter, system-ui" font-size="14" fill="#374151">${escapeXML(line)}</text>`);
+          y += lh;
+        });
+        y += 6;
+      });
+      const height = y + 16;
+      return `<?xml version="1.0" encoding="UTF-8"?>
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <rect x="0" y="0" width="${width}" height="${height}" rx="24" fill="#ffffff" stroke="#e5e7eb"/>
+        ${rows.join("")}
+      </svg>`;
+    }
+
+    function grid4x4SVG(expressions, prompts, width=2048){
+      const cols = 4, rows = 4, cell = width/cols, padding = 20, lh = 18, titleH = 16;
+      const height = cell*rows;
+      const cells = prompts.map((p,i)=>{
+        const col = i%cols, row = Math.floor(i/cols);
+        const x = col*cell, y = row*cell;
+        const label = `#${i+1} — ${expressions[i]}`;
+        const lines = wrapText(p, 42);
+        const textLines = [label, ...lines].slice(0, 16).map((ln,j)=>
+          `<text x="${x+padding}" y="${y+padding+titleH+j*lh}" font-family="Inter, system-ui" font-size="12" fill="#374151">${escapeXML(ln)}</text>`
+        ).join("");
+        return `<g>
+          <rect x="${x+8}" y="${y+8}" width="${cell-16}" height="${cell-16}" rx="16" fill="#ffffff" stroke="#e5e7eb"/>
+          <text x="${x+padding}" y="${y+padding}" font-family="Inter, system-ui" font-size="12" font-weight="700" fill="#111827">${escapeXML(label)}</text>
+          ${textLines}
+        </g>`;
+      }).join("");
+      return `<?xml version="1.0" encoding="UTF-8"?>
+      <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+        <rect x="0" y="0" width="${width}" height="${height}" fill="#f9fafb"/>
+        ${cells}
+      </svg>`;
+    }
+
+    function init(){
+      fillSelect("style", OPT.style, state.style);
+      fillSelect("finish", OPT.finish, state.finish);
+      fillSelect("age", OPT.age, state.age);
+      fillSelect("gender", OPT.gender, state.gender);
+      fillSelect("skin", OPT.skin, state.skin);
+      fillSelect("eye", OPT.eye, state.eye);
+      fillSelect("hairColor", OPT.hairColor, state.hairColor);
+      populateHairStyles(OPT.hairStyleFemale);
+      fillSelect("outfit", OPT.outfit, state.outfit);
+      fillSelect("shoes", OPT.shoes, state.shoes);
+      fillSelect("pose", OPT.pose, state.pose);
+      fillSelect("lighting", OPT.lighting, state.lighting);
+      fillSelect("vibe", OPT.vibe, state.vibe);
+      fillSelect("background", OPT.background, state.background);
+      fillSelect("lockGrid", ["Yes","No"], state.lockGrid);
+      fillSelect("pGender", OPT.gender.filter(g=>g!==BLANK), state.partner.gender);
+      fillSelect("pAge", OPT.age.filter(a=>a!==BLANK), state.partner.age);
+      document.getElementById("pHairStyle").innerHTML = OPT.hairStyleMale.map(o=>`<option>${o}</option>`).join("");
+      document.getElementById("pHairStyle").value = state.partner.hairStyle;
+      document.getElementById("pHairStyle").onchange = ()=>{ state.partner.hairStyle = document.getElementById("pHairStyle").value; render(); };
+      fillSelect("pOutfit", OPT.outfit, state.partner.outfit);
+
+      document.getElementById("seed").addEventListener("input", e=>{ state.seed = parseInt(e.target.value)||0; render(); });
+      document.getElementById("pPrimary").addEventListener("input", e=>{ state.pPrimary = e.target.value; render(); });
+      document.getElementById("pAccent").addEventListener("input", e=>{ state.pAccent = e.target.value; render(); });
+      document.getElementById("traits").addEventListener("input", e=>{ state.traits = e.target.value; render(); });
+      document.getElementById("mode3d").addEventListener("change", e=>{ state.mode3d = e.target.value; render(); });
+
+      const toggle = document.getElementById("coupleToggle");
+      toggle.addEventListener("change", ()=>{
+        state.couple = toggle.checked;
+        document.getElementById("couplePanel").style.display = state.couple ? "block" : "none";
+        render();
+      });
+
+      document.getElementById("btnCopyJSON").addEventListener("click", ()=> copy(JSON.stringify(state,null,2)));
+      document.getElementById("btnCopyTags").addEventListener("click", ()=> copy(toTags(state).join(", ")));
+      document.getElementById("btnCopyPrompt").addEventListener("click", ()=> copy(buildSinglePrompt(state)));
+      document.getElementById("btnSingleSVG").addEventListener("click", ()=>{
+        const svg = singlePromptSVG("Chibi Prompt", buildSinglePrompt(state), 1024);
+        downloadText("chibi_single_prompt.svg", svg, "image/svg+xml");
+      });
+      document.getElementById("btn16TXT").addEventListener("click", ()=>{
+        const prompts = build16Prompts(state).join("\\n\\n");
+        downloadText("chibi_16_prompts.txt", prompts, "text/plain");
+      });
+      document.getElementById("btn16SVG").addEventListener("click", ()=>{
+        const prompts = build16Prompts(state);
+        const svg = listSVG("Chibi — 16 Prompts", prompts, 1024);
+        downloadText("chibi_16_prompts.svg", svg, "image/svg+xml");
+      });
+      document.getElementById("btn4x4SVG").addEventListener("click", ()=>{
+        const prompts = build16Prompts(state);
+        const svg = grid4x4SVG(EXPRESSIONS_16, prompts, 2048);
+        downloadText("chibi_4x4_sheet.svg", svg, "image/svg+xml");
+      });
+      document.getElementById("btn4x4PNG").addEventListener("click", async ()=>{
+        const prompts = build16Prompts(state);
+        const svg = grid4x4SVG(EXPRESSIONS_16, prompts, 2048);
+        const blob = await svgToPngBlob(svg, 2048);
+        downloadBlob("chibi_4x4_sprite.png", blob);
+      });
+
+      render();
+    }
+
+    function render(){
+      const sp = buildSinglePrompt(state);
+      document.getElementById("singlePrompt").value = sp;
+      const prompts16 = build16Prompts(state);
+      document.getElementById("sixteenPrompts").value = prompts16.join("\\n\\n");
+    }
+
+    function copy(text){
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(()=>alert("Copied ✂️")).catch(()=>fallbackCopy(text));
+      } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text){
+      const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta);
+      ta.select(); try { document.execCommand("copy"); alert("Copied ✂️"); } catch { alert("Copy failed"); }
+      document.body.removeChild(ta);
+    }
+
+    init();
+  </script>
+</body>
+</html>
